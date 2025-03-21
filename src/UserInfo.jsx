@@ -47,7 +47,7 @@ const UserInfo = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
+    <div className="content-container">
       <h1>User Information</h1>
       <form onSubmit={handleSubmit}>
         {/* Age Input */}
@@ -109,9 +109,9 @@ const UserInfo = () => {
         </div>
 
         {/* Race Checkboxes */}
-        <div style={{ marginBottom: "15px" }}>
+        <div>
           <label>Race:</label>
-          <div>
+          <div className="align-center">
             {raceOptions.map((race) => (
               <label key={race} style={{ display: "block", margin: "5px 0" }}>
                 <input

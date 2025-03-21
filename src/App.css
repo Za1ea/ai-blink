@@ -14,7 +14,8 @@
 }
 
 .big-logo {
-  width: 75%
+  width: 75%;
+  max-width: 300px;
 }
 
 .carrot {
@@ -23,7 +24,8 @@
 }
 
 .content-container {
-  padding: 2.5%;
+  padding: 0% 5%;
+  margin: 0% 5%
 }
 
 .default_button {
