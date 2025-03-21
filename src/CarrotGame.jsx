@@ -42,6 +42,7 @@ const CarrotGame = () => {
 
     const content = () => (
         <div className="game-container">
+            <h3>Pick as many carrots as possible by tapping on them!</h3>
             <div className="score-display">Score: {score}</div>
             {carrots.map((carrot) => (
                 <img src='carrot_top.png' key={carrot.id} className="carrot"
@@ -53,7 +54,7 @@ const CarrotGame = () => {
     );
 
     return (
-        <VideoRecorder pageTitle="Carrot Game Recording" content={content} nextPage="/osdi-questionnaire" />
+        <VideoRecorder pageTitle="Carrot Game Recording" content={content} currentPage="playing-game" nextPage="/osdi-questionnaire" />
     );
 };
 

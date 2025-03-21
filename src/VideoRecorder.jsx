@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecording } from "./RecordingContext";
 
-const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioSrc, onStart }) => {
+const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nextPage, audioSrc, onStart }) => {
     const { isRecording, setIsRecording } = useRecording();
     const [recordedVideo, setRecordedVideo] = useState(null);
+    const [videoBlob, setVideoBlob] = useState(null); // Store video blob for download
     const [showNextButton, setShowNextButton] = useState(false);
     const mediaRecorderRef = useRef(null);
     const recordedChunksRef = useRef([]);
@@ -12,7 +13,7 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioS
     const navigate = useNavigate();
 
     const handleStartRecording = async () => {
-        alert("Attempting to access the camera...");
+        console.log("Attempting to access the camera...");
 
         // Check if mediaDevices API is available
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -24,7 +25,7 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioS
         try {
             // Request video only (no audio)
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            alert("Camera access granted");
+            console.log("Camera access granted");
             recordedChunksRef.current = []; // Clear previous recordings
 
             mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "video/webm" });
@@ -37,7 +38,9 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioS
 
             mediaRecorderRef.current.onstop = () => {
                 const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
-                setRecordedVideo(URL.createObjectURL(blob));
+                const videoUrl = URL.createObjectURL(blob);
+                setRecordedVideo(videoUrl);
+                setVideoBlob(blob); // Store the blob for downloading
                 stream.getTracks().forEach((track) => track.stop()); // Stop the camera
             };
 
@@ -75,6 +78,19 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioS
         }
     };
 
+    const handleDownload = (videoName = "blink-video") => {
+        console.log("downloading")
+        if (!videoBlob) return;
+
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(videoBlob);
+        downloadLink.download = videoName + ".webm"; // File name for the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        console.log("downloaded")
+    };
+
     const handleNext = () => {
         if (nextPage) {
             navigate(nextPage); // Navigate to the specified page
@@ -108,9 +124,12 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, nextPage, audioS
 
             {/* Display Recorded Video */}
             {recordedVideo && (
-                <div style={{ marginTop: "20px" }}>
+                <div className="content-container">
                     <h2>Recorded Video:</h2>
                     <video src={recordedVideo} controls className="video-playback" />
+                    <button onClick={() => handleDownload(currentPage)} className="download-button">
+                        Download Video
+                    </button>
                 </div>
             )}
 

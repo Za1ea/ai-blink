@@ -11,14 +11,31 @@ const ReadingPage = () => {
     // Define the different texts
     const texts = {
         text1: (
-            <p>
-                While being recorded, please read this passage about dry eye disease: <br />
-                "The ocean is vast, mysterious, and full of life. Protecting marine
-                ecosystems is essential for the health of our planet."
-            </p>
+            <div className="text-container">
+                <h4>While being recorded, please read this passage about dry eye disease: </h4>
+                <p>Dry eye happens when your eyes don’t make enough tears to stay wet, or when your tears don’t work correctly. 
+                This can make your eyes feel uncomfortable, and in some cases it can also cause vision problems. Dry eye is common 
+                — it affects millions of Americans every year. The good news is that if you have dry eye, there are lots of things 
+                you can do to keep your eyes healthy and stay comfortable. </p>
+                <p>Symptoms of dry eye include a scratchy feeling (like there’s something in your eye), 
+                stinging or burning feelings in your eye, red eyes, sensitivity to light, blurry vision, eye fatigue, etc. </p>
+                <p>Dry eye can put you at increased risk for eye infections and decrease quality of life by making daily activities (like reading)
+                difficult. Severe dry eye can lead to damage to the surface of your eyes, corneal abrasions, eye inflammation, 
+                and even vision loss. <br />
+                Anyone can get dry eye, but you might be more likely to have dry eye if you:</p>
+                <ul>
+                    <li>Are age 50 or older</li>
+                    <li>Are female</li>
+                    <li>Wear contact lenses</li>
+                    <li>Don’t get enough vitamin A (found in foods like carrots, broccoli, and liver) or omega-3 fatty acids (found in fish, walnuts, and vegetable oils)</li>
+                    <li>Have certain autoimmune conditions, like lupus or Sjögren syndrome</li>
+                </ul>
+                <p>Dry eye is caused by problems with the tear film, including decreased tear production and increased tear evaporation.
+                </p>
+            </div>
         ),
         text2: (
-            <div>
+            <div className="text-container">
                 <p>
                     While being recorded, please read this Alice in Wonderland excerpt: 
                 </p>
@@ -76,7 +93,7 @@ const ReadingPage = () => {
         </div>
     )
 
-    const pageTitle = "Reading Page"
+    const pageTitle = "Reading"
 
     const nextPage = "/watch-video"
 
@@ -85,6 +102,7 @@ const ReadingPage = () => {
         <VideoRecorder 
             pageTitle={pageTitle} 
             content={readingPassage} 
+            currentPage={pageTitle.toLowerCase()} 
             nextPage={nextPage} 
         />
     );

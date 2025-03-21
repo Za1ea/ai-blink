@@ -12,14 +12,15 @@ const WatchVideo = () => {
         </div>
     );
 
-    const pageTitle = "Video Page"
-
+    const pageTitle = "Watching a Video"
+    const currentPage = "watching"
     const nextPage = "/music"
 
     return (
         <VideoRecorder 
         pageTitle={pageTitle} 
         content={videoContent} 
+        currentPage={currentPage} 
         nextPage={nextPage} 
         />
     );
