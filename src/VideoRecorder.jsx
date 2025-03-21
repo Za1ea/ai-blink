@@ -55,7 +55,7 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
             }
 
             // Automatically stop recording after 10 seconds
-            setTimeout(() => handleStopRecording(true), 10000);
+            setTimeout(() => handleStopRecording(true), 60000);
 
         } catch (error) {
             console.error("Error accessing camera:", error);
