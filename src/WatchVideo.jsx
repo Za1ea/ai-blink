@@ -1,15 +1,21 @@
 import React from "react";
 import VideoRecorder from "./VideoRecorder";
+import YouTube from "react-youtube";
 
 const WatchVideo = () => {
+    const options = {
+        height: '390',
+        width: '640',
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+        },
+    };
+
     const videoContent = (
-        <div>
-            <p>Watch this video while being recorded:</p>
-            <video controls autoPlay loop style={{ width: "100%", maxWidth: "500px" }}>
-                <source src="example-video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-        </div>
+      
+        <YouTube videoId="F3YR1-gJjWM" options={options} id="video"/>
+        
     );
 
     const pageTitle = "Watching a Video"
