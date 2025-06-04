@@ -1,14 +1,15 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecording } from "./RecordingContext";
+import RecordRTC from "recordrtc";
 
 const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nextPage, audioSrc, onStart }) => {
     const { isRecording, setIsRecording } = useRecording();
     const [recordedVideo, setRecordedVideo] = useState(null);
     const [videoBlob, setVideoBlob] = useState(null); // Store video blob for download
     const [showNextButton, setShowNextButton] = useState(false);
-    const mediaRecorderRef = useRef(null);
-    const recordedChunksRef = useRef([]);
+    const recorderRef = useRef(null);
+    const streamRef = useRef(null);
     const audioRef = useRef(null);
     const navigate = useNavigate();
 
@@ -26,25 +27,15 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
             // Request video only (no audio)
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             console.log("Camera access granted");
-            recordedChunksRef.current = []; // Clear previous recordings
+            streamRef.current = stream; // Clear previous recordings
 
-            mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "video/webm" });
+            recorderRef.current = new RecordRTC(stream, {
+                type: "video",
+                mimeType: "video/mp4",
+                disableLogs: true
+            });
 
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    recordedChunksRef.current.push(event.data);
-                }
-            };
-
-            mediaRecorderRef.current.onstop = () => {
-                const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
-                const videoUrl = URL.createObjectURL(blob);
-                setRecordedVideo(videoUrl);
-                setVideoBlob(blob); // Store the blob for downloading
-                stream.getTracks().forEach((track) => track.stop()); // Stop the camera
-            };
-
-            mediaRecorderRef.current.start();
+            recorderRef.current.startRecording();
             setIsRecording(true);
             if (onStart) onStart();
             setShowNextButton(false); // Hide the "Next" button when recording starts
@@ -54,7 +45,7 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
                 audioRef.current.play();
             }
 
-            // Automatically stop recording after 10 seconds
+            // Automatically stop recording after 1 minute
             setTimeout(() => handleStopRecording(true), 60000);
 
         } catch (error) {
@@ -65,9 +56,20 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
     };
 
     const handleStopRecording = (timedOut = false) => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop();
+        if (recorderRef.current) {
+            recorderRef.current.stopRecording(async () => {
+                const blob = recorderRef.current.getBlob();
+                const videoUrl = URL.createObjectURL(blob);
+    
+                setRecordedVideo(videoUrl);
+                setVideoBlob(blob);
+    
+                if (streamRef.current) {
+                    streamRef.current.getTracks().forEach((track) => track.stop());
+                }
+            });
         }
+
         setIsRecording(false);
         setShowNextButton(timedOut)
 
@@ -82,13 +84,17 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
         console.log("downloading")
         if (!videoBlob) return;
 
+        // Generate a unique timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); 
+        const finalFileName = `${videoName}-${timestamp}.mp4`;
+
         const downloadLink = document.createElement("a");
         downloadLink.href = URL.createObjectURL(videoBlob);
-        downloadLink.download = videoName + ".webm"; // File name for the download
+        downloadLink.download = finalFileName; // File name for the download
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
-        console.log("downloaded")
+        console.log("downloaded: ", finalFileName)
     };
 
     const handleNext = () => {

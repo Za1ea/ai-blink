@@ -13,8 +13,9 @@ const WatchVideo = () => {
     };
 
     const videoContent = (
-      
+      <div className="responsive-video">
         <YouTube videoId="F3YR1-gJjWM" options={options} id="video"/>
+      </div>
         
     );
 
