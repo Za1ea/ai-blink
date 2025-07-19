@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import VideoRecorder from "./VideoRecorder";
-import { useRecording } from "./RecordingContext";
+import { useRecording } from "./context/RecordingContext";
 
 const CarrotGame = () => {
     const { isRecording } = useRecording();
@@ -11,14 +11,22 @@ const CarrotGame = () => {
         console.log("Generating carrot...");  // Debugging
 
         const id = Date.now();
-        const x = Math.random() * 90;
-        const y = Math.random() * 80;
+        var x = Math.random() * 90;
+        var y = Math.random() * 80;
+
+        console.log(x, y)
+
+        while ((x < 20 && y < 20) || y < 20){
+            x = Math.random() * 90;
+            y = Math.random() * 80;
+            console.log(x, y)
+        }
 
         setCarrots((prev) => [...prev, { id, x, y }]);
 
         setTimeout(() => {
             setCarrots((prev) => prev.filter((carrot) => carrot.id !== id));
-        }, 3000);
+        }, 500);
     };
 
     const collectCarrot = (id) => {
@@ -42,8 +50,10 @@ const CarrotGame = () => {
 
     const content = () => (
         <div className="game-container">
-            <h3>Pick as many carrots as possible by tapping on them!</h3>
-            <div className="score-display">Score: {score}</div>
+            <div style={{ display: 'flex' }}>
+                <div className="score-display">Score: {score}</div>
+                <h3>Pick as many carrots as possible by tapping on them!</h3>
+            </div>
             {carrots.map((carrot) => (
                 <img src='carrot_top.png' key={carrot.id} className="carrot"
                     style={{ top: `${carrot.y}%`, left: `${carrot.x}%` }}

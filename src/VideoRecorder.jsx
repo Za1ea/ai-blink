@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecording } from "./RecordingContext";
+import { useRecording } from "./context/RecordingContext";
+import { useFormData } from "./context/FormDataContext"; 
 import RecordRTC from "recordrtc";
 
 const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nextPage, audioSrc, onStart }) => {
@@ -12,6 +13,8 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
     const streamRef = useRef(null);
     const audioRef = useRef(null);
     const navigate = useNavigate();
+
+    const { setVideos } = useFormData();
 
     const handleStartRecording = async () => {
         console.log("Attempting to access the camera...");
@@ -41,9 +44,10 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
             setShowNextButton(false); // Hide the "Next" button when recording starts
 
             // Start playing audio if provided
-            if (audioSrc && audioRef.current) {
-                audioRef.current.play();
-            }
+            // if (audioSrc && audioRef.current) {
+            //     console.log("playing audio")
+            //     audioRef.current.play();
+            // }
 
             // Automatically stop recording after 1 minute
             setTimeout(() => handleStopRecording(true), 60000);
@@ -74,10 +78,10 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
         setShowNextButton(timedOut)
 
         // Stop playing audio if it is playing
-        if (audioSrc && audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0; // Reset audio to the beginning
-        }
+        // if (audioSrc && audioRef.current) {
+        //     audioRef.current.pause();
+        //     audioRef.current.currentTime = 0; // Reset audio to the beginning
+        // }
     };
 
     const handleDownload = (videoName = "blink-video") => {
@@ -98,6 +102,19 @@ const VideoRecorder = ({ pageTitle = "Recording Page", content, currentPage, nex
     };
 
     const handleNext = () => {
+        if (!videoBlob) {
+            alert("No video recorded yet!");
+            return;
+        }
+
+        // Save video blob to global context using currentPage as the key
+        setVideos((prev) => ({
+            ...prev,
+            [currentPage]: videoBlob
+        }));
+
+        console.log("Saved video for", currentPage);
+
         if (nextPage) {
             navigate(nextPage); // Navigate to the specified page
         } else {

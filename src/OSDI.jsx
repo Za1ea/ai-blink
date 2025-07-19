@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFormData } from "./context/FormDataContext";
 
 const OSDIQuestionnaire = () => {
     // Sections of the questionnaire
@@ -32,13 +33,14 @@ const OSDIQuestionnaire = () => {
         { label: "All of the time", value: 4 }
     ];
 
-    const [responses, setResponses] = useState({});
+    const { osdiResults, setOsdiResults } = useFormData();
+    const navigate = useNavigate();
 
     // Handle answer selection
     const handleChange = (event, question) => {
         const value = parseInt(event.target.value, 10); // Convert string to integer
         console.log(event.target.value)
-        setResponses((prev) => ({
+        setOsdiResults((prev) => ({
             ...prev,
             [question]: value
         }));
@@ -46,11 +48,12 @@ const OSDIQuestionnaire = () => {
 
     // Calculate OSDI Score
     const calculateScore = () => {
-        const answeredValues = Object.values(responses);
+        const answeredValues = Object.values(osdiResults);
         if (answeredValues.length === 0) return 0; // No responses, score is 0
 
         const totalScore = answeredValues.reduce((sum, value) => sum + value, 0);
-        const OSDIScore = totalScore*25/answeredValues.length
+        const OSDIScore = (totalScore*25/answeredValues.length).toFixed(2);
+        setOsdiResults((prev) => ({ ...prev, ["OSDI-score"]: OSDIScore }));
         return OSDIScore; // Raw score (You can normalize this if needed)
     };
 
@@ -74,7 +77,7 @@ const OSDIQuestionnaire = () => {
             dry_eye_status = "severe"
         }
 
-        console.log("OSDI Responses Submitted:", responses);
+        console.log("OSDI Responses Submitted:", osdiResults);
         console.log("Final OSDI Score:", finalScore);
         if (dry_eye_status == "None") {
             console.log("No dry eye")
@@ -85,6 +88,7 @@ const OSDIQuestionnaire = () => {
             dry_eye_msg = `You have ${dry_eye_status} dry eye disease.`
         }
         alert(`Your OSDI Score: ${finalScore}\n ${dry_eye_msg}`);
+        navigate("/review");
     };
 
     return (
@@ -101,7 +105,7 @@ const OSDIQuestionnaire = () => {
                                 </label>
                                 <select
                                     id={`question-${question}`}
-                                    value={responses[question] ?? ""}
+                                    value={osdiResults[question] ?? ""}
                                     onChange={(event) => handleChange(event, question)}
                                     style={{ width: "100%", padding: "8px", fontSize: "16px" }}
                                     required

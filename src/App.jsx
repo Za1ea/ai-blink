@@ -5,13 +5,13 @@ import './App.css'
 // Import your components
 import Homepage from "./Homepage"
 import UserInfo from "./UserInfo"
-import EnvInfo from './EnvInfo'
 import TextSelection from './TextSelection'
 import ReadingPage from './Reading'
 import WatchVideo from "./WatchVideo"
 import ListeningPage from './Listening'
 import CarrotGame from './CarrotGame'
 import OSDIQuestionnaire from './OSDI'
+import ReviewPage from './ReviewPage'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -22,7 +22,6 @@ function App() {
         {/* Define the routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/user-info" element={<UserInfo />} />
-        <Route path="/environment-info" element={<EnvInfo />} />
         <Route path="/select-reading" element={<TextSelection />} />
         <Route path="/reading" element={<ReadingPage />} />
         <Route path="/watch-video" element={<WatchVideo />} />
@@ -37,6 +36,7 @@ function App() {
           }
         />
         <Route path="/osdi-questionnaire" element={<OSDIQuestionnaire />} />
+        <Route path="/review" element={<ReviewPage />} />
       </Routes>
     </Router>
   )
